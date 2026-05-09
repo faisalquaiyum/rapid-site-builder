@@ -20,7 +20,7 @@ export default function Home() {
 
   return (
     <section className="bg-gray-900">
-      <main className="flex flex-col items-center justify-between text-sm text-white text-center min-h-[785px] max-md:px-4 bg-[radial-gradient(60%_60%_at_50%_0%,#0f172a_0%,#111827_35%,#0b1020_100%)]">
+      <main className="flex flex-col items-center justify-between pt-30 md:pt-20 text-sm text-white text-center min-h-[785px] max-md:px-4 bg-[radial-gradient(60%_60%_at_50%_0%,#0f172a_0%,#111827_35%,#0b1020_100%)]">
         {/* Hero Content */}
         <div className="flex flex-col items-center justify-center w-full">
           <h1 className="text-4xl md:text-[40px] font-medium">

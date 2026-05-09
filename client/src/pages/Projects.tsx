@@ -1,145 +1,151 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Project } from "../types";
-import { Loader2Icon, PlusIcon, Trash, TrashIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { dummyProjects } from "../assets/assets";
-import Footer from "../components/Footer";
+import {
+  ArrowBigDownDashIcon,
+  EyeIcon,
+  EyeOffIcon,
+  FullscreenIcon,
+  LaptopIcon,
+  Loader2Icon,
+  MessageSquareIcon,
+  SaveIcon,
+  SmartphoneIcon,
+  TabletIcon,
+  XIcon,
+} from "lucide-react";
+import { dummyConversations, dummyProjects } from "../assets/assets";
 
 const Projects = () => {
-  const [loading, setLoading] = useState(true);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const { projectId } = useParams();
   const navigate = useNavigate();
+  const [project, setProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(true);
+  const [device, setDevice] = useState<"phone" | "tablet" | "desktop">(
+    "desktop",
+  );
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const fetchProjects = async () => {
-    setProjects(dummyProjects);
-    //simulate loading
+  const fetchProject = async () => {
+    const project = dummyProjects.find((project) => project.id === projectId);
     setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+      if (project) {
+        setProject({ ...project, conversation: dummyConversations });
+        setLoading(false);
+        setIsGenerating(project.current_code ? false : true);
+      }
+    }, 2000);
   };
 
-  const deleteProject = (projectId: string) => {};
-
   useEffect(() => {
-    fetchProjects();
+    fetchProject();
   }, []);
 
-  return (
-    <section className="min-h-screen text-white bg-gray-900 bg-[radial-gradient(60%_60%_at_50%_0%,#0f172a_0%,#111827_35%,#0b1020_100%)]">
-      <main className="min-h-screen px-4 py-10 md:px-16 lg:px-24 xl:px-32">
-        {loading ? (
-          <div className="flex min-h-[70vh] items-center justify-center">
-            <Loader2Icon className="size-7 animate-spin text-blue-300" />
-          </div>
-        ) : projects.length > 0 ? (
-          <div>
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-10">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-semibold">
-                  My Projects
-                </h1>
-                <p className="mt-2 text-sm text-slate-300">
-                  Manage your saved projects and start new ones.
-                </p>
-              </div>
-              <button
-                onClick={() => navigate("/")}
-                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-emerald-950 bg-blue-400 shadow-lg shadow-black/30 transition hover:-translate-y-0.5 hover:bg-blue-300"
-              >
-                <PlusIcon size={18} /> Create New
-              </button>
-            </div>
+  if (loading) {
+    return (
+      <>
+        <div className="flex items-center justify-center h-screen">
+          <Loader2Icon className="size-7 animate-spin text-violet-200" />
+        </div>
+      </>
+    );
+  }
 
-            {/* Render projects grid/list here */}
-            <div className="flex flex-wrap gap-3.5">
-              {projects.map((project) => (
-                <div
-                  onClick={() => navigate(`/projects/${project.id}`)}
-                  key={project.id}
-                  className="relative group w-72 max-sm:mx-auto cursor-pointer bg-gray-900/60 border border-gray-700 rounded-lg overflow-hidden shadow-md group-hover:shadow-indigo-700/30 group-hover:border-indigo-800/80 transition-all duration-300"
-                >
-                  {/* Desktop-like Mini Preview */}
-                  <div className="relative w-full h-40 bg-gray-900 overflow-hidden border-b border-gray-800">
-                    {project.current_code ? (
-                      <iframe
-                        srcDoc={project.current_code}
-                        className="absolute top-0 left-0 w-[1200px] h-[800px] origin-top-left pointer-events-none"
-                        sandbox="allow-scripts allow-same-origin"
-                        style={{ transform: "scale(0.25)" }}
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-500">
-                        <p>No Preview</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Add your project content title/info here if needed */}
-                  <div className="p-4 text-white bg-linear-180 from-transparent group-hover:from-indigo-950 to-transparent transition-colors">
-                    <div className="flex items-start justify-between">
-                      <h2 className="text-lg font-medium line-clamp-2">
-                        {project.name}
-                      </h2>
-                      <button className="px-2.5 py-0.5 mt-1 ml-2 text-xs bg-gray-800 border border-gray-700 rounded-full">
-                        Website
-                      </button>
-                    </div>
-                    <p className="text-gray-400 mt-1 text-sm line-clamp-2">
-                      {project.initial_prompt}
-                    </p>
-
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex justify-between items-center mt-6"
-                    >
-                      <span className="text-xs text-gray-500">
-                        {new Date(project.createdAt).toLocaleString()}
-                      </span>
-                      <div className="flex gap-3 text-white text-sm">
-                        <button
-                          onClick={() => navigate(`/preview/${project.id}`)}
-                          className="px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md transition-all"
-                        >
-                          Preview
-                        </button>
-                        <button
-                          onClick={() => navigate(`/projects/${project.id}`)}
-                          className="px-3 py-1.5 bg-white/10 hover:bg-white/15 rounded-md transition-colors"
-                        >
-                          Open
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <TrashIcon
-                      className="absolute top-3 right-3 scale-0 group-hover:scale-100 bg-white p-1.5 size-7 rounded text-red-500 text-xl cursor-pointer transition-all"
-                      onClick={() => deleteProject(project.id)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 text-center">
-            <h1 className="text-2xl md:text-3xl font-semibold">
-              No projects yet
-            </h1>
-            <p className="text-slate-300">
-              Create your first project to get started.
+  return project ? (
+    <div className="min-h-screen text-white bg-gray-900 bg-[radial-gradient(60%_60%_at_50%_0%,#0f172a_0%,#111827_35%,#0b1020_100%)]">
+      {/* builder navbar */}
+      <div className="flex max-sm:flex-col sm:items-center gap-4 px-4 py-2 no-scrollbar">
+        {/* left */}
+        <div className="flex items-center gap-2 sm:min-w-90 text-nowrap">
+          <img
+            src="/favicon.svg"
+            alt="logo"
+            className="h-6 cursor-pointer"
+            onClick={() => navigate("/")}
+          />
+          <div className="max-w-64 sm:max-w-xs">
+            <p className="text-sm text-medium capitalize truncate">
+              {project.name}
             </p>
-            <button
-              onClick={() => navigate("/")}
-              className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-emerald-950 bg-blue-400 shadow-lg shadow-black/30 transition hover:-translate-y-0.5 hover:bg-blue-300"
-            >
-              Create Project
-            </button>
+            <p className="text-xs text-gray-400 -mt-0.5">
+              Previewing last saved version
+            </p>
           </div>
-        )}
-      </main>
-      <Footer />
-    </section>
+          <div className="sm:hidden flex-1 flex justify-end">
+            {isMenuOpen ? (
+              <MessageSquareIcon
+                onClick={() => setIsMenuOpen(false)}
+                className="size-6 cursor-pointer"
+              />
+            ) : (
+              <XIcon
+                onClick={() => setIsMenuOpen(true)}
+                className="size-6 cursor-pointer"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* middle */}
+        <div className="hidden sm:flex gap-2 bg-gray-950 p-1.5 rounded-md">
+          <SmartphoneIcon
+            onClick={() => setDevice("phone")}
+            className={`size-6 p-1 rounded cursor-pointer ${device === "phone" ? "bg-gray-700" : ""}`}
+          />
+          <TabletIcon
+            onClick={() => setDevice("tablet")}
+            className={`size-6 p-1 rounded cursor-pointer ${device === "tablet" ? "bg-gray-700" : ""}`}
+          />
+          <LaptopIcon
+            onClick={() => setDevice("desktop")}
+            className={`size-6 p-1 rounded cursor-pointer ${device === "desktop" ? "bg-gray-700" : ""}`}
+          />
+        </div>
+        {/* right */}
+        <div className="flex items-center justify-end gap-3 flex-1 text-xs sm:text-sm">
+          <button
+            disabled={isSaving}
+            className="max-sm:hidden bg-gray-800 hover:bg-gray-700 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors border border-gray-700"
+          >
+            {isSaving ? (
+              <Loader2Icon className="animate-spin" size={16} />
+            ) : (
+              <SaveIcon size={16} />
+            )}{" "}
+            Save
+          </button>
+
+          <Link
+            target="_blank"
+            to={`/preview/${projectId}`}
+            className="flex items-center gap-2 px-4 py-1 rounded sm:rounded-sm border border-gray-700 hover:border-gray-500 transition-colors"
+          >
+            <FullscreenIcon size={16} /> Preview
+          </Link>
+
+          <button className="bg-linear-to-br from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors">
+            <ArrowBigDownDashIcon size={16} /> Download
+          </button>
+
+          <button className="bg-linear-to-br from-indigo-700 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors">
+            {project.isPublished ? (
+              <EyeOffIcon size={16} />
+            ) : (
+              <EyeIcon size={16} />
+            )}
+            {project.isPublished ? "Unpublish" : "Publish"}
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="flex items-center justify-center h-screen">
+      <p className="text-2xl font-medium text-gray-200">
+        Unable to load project!
+      </p>
+    </div>
   );
 };
 

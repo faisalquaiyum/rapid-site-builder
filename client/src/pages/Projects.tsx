@@ -14,7 +14,12 @@ import {
   TabletIcon,
   XIcon,
 } from "lucide-react";
-import { dummyConversations, dummyProjects } from "../assets/assets";
+import {
+  dummyConversations,
+  dummyProjects,
+  dummyVersion,
+} from "../assets/assets";
+import Sidebar from "../components/Sidebar";
 
 const Projects = () => {
   const { projectId } = useParams();
@@ -32,12 +37,21 @@ const Projects = () => {
     const project = dummyProjects.find((project) => project.id === projectId);
     setTimeout(() => {
       if (project) {
-        setProject({ ...project, conversation: dummyConversations });
+        setProject({
+          ...project,
+          conversation: dummyConversations,
+          versions: dummyVersion,
+        });
         setLoading(false);
         setIsGenerating(project.current_code ? false : true);
       }
     }, 2000);
   };
+
+  const saveProject = () => {};
+
+  const downloadCode = () => {};
+  const togglePublish = async () => {};
 
   useEffect(() => {
     fetchProject();
@@ -54,7 +68,7 @@ const Projects = () => {
   }
 
   return project ? (
-    <div className="min-h-screen text-white bg-gray-900 bg-[radial-gradient(60%_60%_at_50%_0%,#0f172a_0%,#111827_35%,#0b1020_100%)]">
+    <div className="h-screen min-h-screen flex flex-col overflow-hidden text-white bg-gray-900 bg-[radial-gradient(60%_60%_at_50%_0%,#0f172a_0%,#111827_35%,#0b1020_100%)]">
       {/* builder navbar */}
       <div className="flex max-sm:flex-col sm:items-center gap-4 px-4 py-2 no-scrollbar">
         {/* left */}
@@ -106,6 +120,7 @@ const Projects = () => {
         {/* right */}
         <div className="flex items-center justify-end gap-3 flex-1 text-xs sm:text-sm">
           <button
+            onClick={saveProject}
             disabled={isSaving}
             className="max-sm:hidden bg-gray-800 hover:bg-gray-700 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors border border-gray-700"
           >
@@ -125,11 +140,17 @@ const Projects = () => {
             <FullscreenIcon size={16} /> Preview
           </Link>
 
-          <button className="bg-linear-to-br from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors">
+          <button
+            onClick={downloadCode}
+            className="bg-linear-to-br from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors"
+          >
             <ArrowBigDownDashIcon size={16} /> Download
           </button>
 
-          <button className="bg-linear-to-br from-indigo-700 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors">
+          <button
+            onClick={togglePublish}
+            className="bg-linear-to-br from-indigo-700 to-indigo-600 hover:from-indigo-600 hover:to-indigo-500 text-white px-3.5 py-1 flex items-center gap-2 rounded sm:rounded-sm transition-colors"
+          >
             {project.isPublished ? (
               <EyeOffIcon size={16} />
             ) : (
@@ -137,6 +158,19 @@ const Projects = () => {
             )}
             {project.isPublished ? "Unpublish" : "Publish"}
           </button>
+        </div>
+      </div>
+      {/* project builder area */}
+      <div className="flex-1 min-h-0 flex overflow-hidden">
+        <Sidebar
+          isMenuOpen={isMenuOpen}
+          project={project}
+          setProject={setProject}
+          isGenerating={isGenerating}
+          setIsGenerating={setIsGenerating}
+        />
+        <div className="flex-1 min-h-0 p-2 pl-0 overflow-y-auto">
+          project preview
         </div>
       </div>
     </div>

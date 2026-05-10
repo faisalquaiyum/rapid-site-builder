@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom"
 import Home from "./pages/Home"
 import Preview from "./pages/Preview"
 import Pricing from "./pages/Pricing"
@@ -11,9 +11,15 @@ import MyProjects from "./pages/MyProjects"
 
 function App() {
 
+  const { pathname } = useLocation()
+
+const hideNavbar = pathname.startsWith('/projects/') && pathname !== '/projects'
+    || pathname.startsWith('/view/')
+    || pathname.startsWith('/preview/')
+
   return (
     <>
-    <Navbar />
+    { !hideNavbar && <Navbar /> }
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/pricing" element={<Pricing />} />

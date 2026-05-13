@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Project } from "../types";
 import {
@@ -20,6 +20,8 @@ import {
   dummyVersion,
 } from "../assets/assets";
 import Sidebar from "../components/Sidebar";
+import type { ProjectPreviewRef } from "../components/ProjectPreview";
+import ProjectPreview from "../components/ProjectPreview";
 
 const Projects = () => {
   const { projectId } = useParams();
@@ -32,6 +34,8 @@ const Projects = () => {
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const previewRef = useRef<ProjectPreviewRef>(null);
 
   const fetchProject = async () => {
     const project = dummyProjects.find((project) => project.id === projectId);
@@ -169,8 +173,13 @@ const Projects = () => {
           isGenerating={isGenerating}
           setIsGenerating={setIsGenerating}
         />
-        <div className="flex-1 min-h-0 p-2 pl-0 overflow-y-auto">
-          project preview
+        <div className="flex-1 p-2 pl-0">
+          <ProjectPreview
+            ref={previewRef}
+            project={project}
+            isGenerating={isGenerating}
+            device={device}
+          />
         </div>
       </div>
     </div>

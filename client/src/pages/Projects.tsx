@@ -53,8 +53,25 @@ const Projects = () => {
   };
 
   const saveProject = () => {};
+  // download code (index.html)
+  const downloadCode = () => {
+    const code = previewRef.current?.getCode() || project?.current_code;
+    if (!code) {
+      if (isGenerating) {
+        return;
+      }
+      return;
+    }
 
-  const downloadCode = () => {};
+    const element = document.createElement("a");
+    const file = new Blob([code], { type: "text/html" });
+    element.href = URL.createObjectURL(file);
+    element.download = "index.html";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    URL.revokeObjectURL(element.href);
+  };
   const togglePublish = async () => {};
 
   useEffect(() => {

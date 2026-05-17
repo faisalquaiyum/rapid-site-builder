@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { assets } from "../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
+import { authClient } from "@/lib/auth-client";
+import {UserButton} from "@daveyplate/better-auth-ui"
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+
+  const {data: session} = authClient.useSession();
 
   return (
     <header
@@ -38,12 +42,22 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Button */}
-        <button
+        
+        {/* <button
           className="hidden md:block rounded-full px-5 py-2.5 text-sm font-semibold text-emerald-950 bg-blue-400 shadow-lg shadow-black/30 transition hover:-translate-y-0.5 hover:bg-blue-300"
           onClick={() => navigate("/auth/signin")}
         >
           Get Started
-        </button>
+        </button> */}
+
+        {!session?.user ? (
+  <button onClick={()=> navigate('/auth/signin')} className="hidden md:block rounded-full px-5 py-2.5 text-sm font-semibold text-emerald-950 bg-blue-400 shadow-lg shadow-black/30 transition hover:-translate-y-0.5 hover:bg-blue-300">
+    Get started
+  </button>
+): (
+  <UserButton size='icon'/>
+)
+}
 
         {/* Mobile Menu Button */}
         <button

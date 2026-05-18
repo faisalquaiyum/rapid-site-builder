@@ -27,7 +27,9 @@ const Sidebar = ({
   const messageRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
 
-  const handleRollback = async (versionId: string) => {};
+  const handleRollback = async (versionId: string) => {
+    
+  };
 
   const handleRevisions = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -1,15 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { assets } from "../assets/assets";
 import { Link, useNavigate } from "react-router-dom";
 import { authClient } from "@/lib/auth-client";
-import {UserButton} from "@daveyplate/better-auth-ui"
+import { UserButton } from "@daveyplate/better-auth-ui";
+import api from "@/configs/axios";
+import { toast } from "sonner";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const [credits, setCredits] = useState(0);
+  const { data: session } = authClient.useSession();
 
-  const {data: session} = authClient.useSession();
+  const getCredits = async () => {
+    try {
+      const { data } = await api.get("/api/user/credits");
+
+      setCredits(data.credits);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error.message);
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (session?.user) {
+      getCredits();
+    }
+  }, [session?.user]);
 
   return (
     <header
@@ -42,22 +61,24 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Button */}
-        
-        {/* <button
-          className="hidden md:block rounded-full px-5 py-2.5 text-sm font-semibold text-emerald-950 bg-blue-400 shadow-lg shadow-black/30 transition hover:-translate-y-0.5 hover:bg-blue-300"
-          onClick={() => navigate("/auth/signin")}
-        >
-          Get Started
-        </button> */}
+        <div className="hidden md:flex items-center gap-3">
+          {!session?.user ? (
+            <button
+              onClick={() => navigate("/auth/signin")}
+              className="rounded-full px-5 py-2.5 text-sm font-semibold text-emerald-950 bg-blue-400 shadow-lg shadow-black/30 transition hover:-translate-y-0.5 hover:bg-blue-300"
+            >
+              Get started
+            </button>
+          ) : (
+            <>
+              <button className="bg-white/10 px-5 py-1.5 text-xs sm:text-sm border text-gray-200 rounded-full">
+                Credits : <span className="text-indigo-300">{credits}</span>
+              </button>
 
-        {!session?.user ? (
-  <button onClick={()=> navigate('/auth/signin')} className="hidden md:block rounded-full px-5 py-2.5 text-sm font-semibold text-emerald-950 bg-blue-400 shadow-lg shadow-black/30 transition hover:-translate-y-0.5 hover:bg-blue-300">
-    Get started
-  </button>
-): (
-  <UserButton size='icon'/>
-)
-}
+              <UserButton size="icon" />
+            </>
+          )}
+        </div>
 
         {/* Mobile Menu Button */}
         <button

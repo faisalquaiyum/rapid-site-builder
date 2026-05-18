@@ -1,19 +1,35 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Loader2Icon } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import api from "@/configs/axios";
 
 export default function Home() {
+  const {data: session} = authClient.useSession();
+  const navigate = useNavigate();
+
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+
   const onSubmitHandler = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (loading || input.trim().length === 0) {
-      return;
-    }
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      if (!session?.user) {
+        return toast.error('Please sign in to create a project');
+      } else if (!input.trim()) {
+        return toast.error('Please enter a message');
+      }
+      setLoading(true);
+      const { data } = await api.post('/api/user/project', {
+        initial_prompt: input
+      });
       setLoading(false);
-    }, 3000);
+      navigate(`/projects/${data.projectId}`);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error.message);
+      setLoading(false);
+    }
   };
 
   const isDisabled = loading || input.trim().length === 0;

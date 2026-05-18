@@ -84,7 +84,7 @@ export const createUserProject = async (req: Request, res: Response) => {
 
     // Enhance user prompt
     const promptEnhanceResponse = await openai.chat.completions.create({
-      model: 'z-ai/glm-4.5-air:free',
+      model: 'poolside/laguna-m.1:free',
       messages: [
         {
           role: 'system',
@@ -128,7 +128,7 @@ export const createUserProject = async (req: Request, res: Response) => {
 
         // Generate website code
         const codeGenerationResponse = await openai.chat.completions.create({
-          model: 'z-ai/glm-4.5-air:free',
+          model: 'poolside/laguna-m.1:free',
           messages: [
             {
               role: 'system',
@@ -167,6 +167,22 @@ export const createUserProject = async (req: Request, res: Response) => {
 
         const code = codeGenerationResponse.choices[0].message.content || '';
 
+        
+        if(!code){
+          await prisma.conversation.create({
+            data: {
+              role: 'assistant',
+              content: "Unable to generate the code, please try again",
+              projectId: project.id
+            }
+          })
+          await prisma.user.update({
+            where: {id: userId},
+            data: {credits: {increment: 5}}
+          })
+          return;
+        }
+
         // Create Version for the project
         const version = await prisma.version.create({
           data: {
@@ -200,15 +216,20 @@ export const createUserProject = async (req: Request, res: Response) => {
         });
 
         } catch (error: any) {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            credits: {
-              increment: 5
+        if (userId) {
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              credits: {
+                increment: 5
+              }
             }
-          }
-        });
+          });
+        }
         console.log(error);
+        if (res.headersSent) {
+          return;
+        }
         res.status(500).json({
           message: error.message
         });
@@ -238,6 +259,9 @@ export const getUserProject = async (req: Request, res: Response) => {
       },
       include: {
         conversation: {
+          orderBy: { timestamp: 'asc' }
+        },
+        versions: {
           orderBy: { timestamp: 'asc' }
         }
       }

@@ -63,7 +63,7 @@ export const makeRevision = async (req: Request, res: Response) => {
 
     // Enhance user prompt
     const promptEnhanceResponse = await openai.chat.completions.create({
-      model: 'poolside/laguna-m.1:free',
+      model: 'poolside/laguna-xs.2:free',
       messages: [
         {
           role: 'system',
@@ -104,7 +104,7 @@ export const makeRevision = async (req: Request, res: Response) => {
 
       // Generate website code
       const codeGenerationResponse = await openai.chat.completions.create({
-        model: 'poolside/laguna-m.1:free',
+        model: 'poolside/laguna-xs.2:free',
         messages: [
           {
             role: 'system',

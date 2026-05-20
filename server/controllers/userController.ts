@@ -398,7 +398,7 @@ export const purchaseCredits = async (req: Request, res: Response) => {
     const session = await stripe.checkout.sessions.create({
       success_url: `${origin}/loading`,
       cancel_url: `${origin}`,
-      line_items: [
+      line_items: [ 
           {
               price_data: {
                   currency: 'usd',

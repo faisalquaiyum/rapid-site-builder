@@ -1,6 +1,5 @@
 import {
   CircleIcon,
-  Icon,
   ScanLineIcon,
   SquareIcon,
   TriangleIcon,

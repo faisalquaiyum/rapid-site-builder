@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { Loader2Icon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import api from "@/configs/axios";
 
 export default function Home() {
-  const {data: session} = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const navigate = useNavigate();
 
   const [input, setInput] = useState("");
@@ -16,13 +16,13 @@ export default function Home() {
     e.preventDefault();
     try {
       if (!session?.user) {
-        return toast.error('Please sign in to create a project');
+        return toast.error("Please sign in to create a project");
       } else if (!input.trim()) {
-        return toast.error('Please enter a message');
+        return toast.error("Please enter a message");
       }
       setLoading(true);
-      const { data } = await api.post('/api/user/project', {
-        initial_prompt: input
+      const { data } = await api.post("/api/user/project", {
+        initial_prompt: input,
       });
       setLoading(false);
       navigate(`/projects/${data.projectId}`);

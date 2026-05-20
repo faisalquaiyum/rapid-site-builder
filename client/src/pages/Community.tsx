@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Project } from "../types";
-import { Loader2Icon, PlusIcon, TrashIcon } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { dummyProjects } from "../assets/assets";
 import Footer from "../components/Footer";
 import { toast } from "sonner";
 import api from "@/configs/axios";
@@ -14,7 +13,7 @@ const Community = () => {
 
   const fetchProjects = async () => {
     try {
-      const { data } = await api.get('/api/project/published');
+      const { data } = await api.get("/api/project/published");
       setProjects(data.projects);
       setLoading(false);
     } catch (error: any) {
@@ -88,9 +87,7 @@ const Community = () => {
                         {new Date(project.createdAt).toLocaleString()}
                       </span>
                       <div className="flex gap-3 text-white text-sm">
-                        <button
-                          className="flex items-center gap-2 rounded-md px-3 py-1.5 bg-white/10 transition-colors hover:bg-white/15"
-                        >
+                        <button className="flex items-center gap-2 rounded-md px-3 py-1.5 bg-white/10 transition-colors hover:bg-white/15">
                           <span className="flex size-4.5 shrink-0 items-center justify-center rounded-full bg-gray-200 text-black font-semibold">
                             {project.user?.name?.slice(0, 1)}
                           </span>
